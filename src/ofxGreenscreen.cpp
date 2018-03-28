@@ -5,23 +5,46 @@ using namespace cv;
 
 ofxGreenscreen::ofxGreenscreen():width(0), height(0) {
 	input = Mat::zeros(5, 5, CV_8UC3);
-	bgColor.set(20, 200, 20);
+    
+    parameters_chroma.setName("chroma");
+    parameters_chroma.add(doDetailMask.set("detail mask",false));
+    parameters_chroma.add(doBaseMask.set("base mask",false));
+    parameters_chroma.add(doChromaMask.set("chroma mask",false));
+    parameters_chroma.add(doGreenSpill.set("greenspill",false));
+    
+    parameters_chroma.add(bgColor.set("key color",ofColor(20,200,20),ofColor(0,0,0),ofColor(255,255,255)));
+    
+    parameters_chroma.add(strengthBaseMask.set("base mask strength", 0.3, 0.0, 1.f));
+    parameters_chroma.add(strengthChromaMask.set("chroma mask strength", 0.4, 0.0, 1.f));
+    parameters_chroma.add(strengthGreenSpill.set("green spill strength", 0.4, 0.0, 1.f));
+    
+    
+    //gui.addTitle("CLIPPING");
+    parameters_chroma.add(clipBlackBaseMask.set("base mask black", 0.2, 0.0, 1.f));
+    parameters_chroma.add(clipWhiteBaseMask.set("base mask white", 0.6, 0.0, 1.f));
+    parameters_chroma.add(clipBlackDetailMask.set("detail mask black", 0.1, 0.0, 1.f));
+    parameters_chroma.add(clipWhiteDetailMask.set("detail mask white", 0.6, 0.0, 1.f));
+    parameters_chroma.add(clipBlackEndMask.set("end mask black", 0.1, 0.0, 1.f));
+    parameters_chroma.add(clipWhiteEndMask.set("end mask white", 0.6, 0.0, 1.f));
 
-	clipBlackBaseMask = .2;
-	clipWhiteBaseMask = .6;
-	strengthBaseMask = .3;
-
-	clipBlackDetailMask = .1;
-	clipWhiteDetailMask = .6;
-
-	clipBlackEndMask = .1;
-	clipWhiteEndMask = .6;
-
-	clipBlackChromaMask = 0.05;
-	clipWhiteChromaMask = .95;
-
-	strengthGreenSpill = .4;
-	strengthChromaMask = .4;
+    
+//    bgColor.set(20, 200, 20);
+//
+//    clipBlackBaseMask = .2;
+//    clipWhiteBaseMask = .6;
+//    strengthBaseMask = .3;
+//
+//    clipBlackDetailMask = .1;
+//    clipWhiteDetailMask = .6;
+//
+//    clipBlackEndMask = .1;
+//    clipWhiteEndMask = .6;
+//
+//    clipBlackChromaMask = 0.05;
+//    clipWhiteChromaMask = .95;
+//
+//    strengthGreenSpill = .4;
+//    strengthChromaMask = .4;
 
 	cropBottom = cropLeft = cropRight = cropTop = 0;
 
@@ -31,11 +54,11 @@ ofxGreenscreen::ofxGreenscreen():width(0), height(0) {
 ofxGreenscreen::~ofxGreenscreen() {
 }
 
-void ofxGreenscreen::learnBgColor(ofPixelsRef pixelSource) {
+void ofxGreenscreen::learnBgColor(ofPixels pixelSource) {
 	learnBgColor(pixelSource, 0, 0, pixelSource.getWidth(), pixelSource.getHeight());
 }
 
-void ofxGreenscreen::learnBgColor(ofPixelsRef pixelSource, int x, int y, int w, int h) {
+void ofxGreenscreen::learnBgColor(ofPixels pixelSource, int x, int y, int w, int h) {
 	int wh = w * h;
 	int r,g,b;
 	r=g=b=0;
@@ -50,7 +73,7 @@ void ofxGreenscreen::learnBgColor(ofPixelsRef pixelSource, int x, int y, int w, 
 	r/=wh;
 	g/=wh;
 	b/=wh;
-	bgColor.set(r, g, b);
+	bgColor= ofColor(r, g, b);
 	update();
 }
 
@@ -58,7 +81,7 @@ void ofxGreenscreen::setBgColor(ofColor col) {
 	bgColor = col;
 }
 
-void ofxGreenscreen::setPixels(ofPixelsRef pixels) {
+void ofxGreenscreen::setPixels(ofPixels pixels) {
 	setPixels(pixels.getPixels(), pixels.getWidth(), pixels.getHeight());
 }
 
@@ -107,10 +130,10 @@ void ofxGreenscreen::update() {
 	blue = rgbInput[2];
 
 	//subtract the background form each channel and invert the green
-	redSub = red - bgColor.r;
+	redSub = red - bgColor.get().r;
 	bitwise_not(green, greenSub);
-	greenSub -= 255 - bgColor.g;
-	blueSub = blue - bgColor.b;
+	greenSub -= 255 - bgColor.get().g;
+	blueSub = blue - bgColor.get().b;
 
 	maskChroma = Mat(height, width, DataType<unsigned char>::type);
 	maskChroma = Scalar(255);
@@ -146,7 +169,7 @@ void ofxGreenscreen::update() {
 		cvtColor(input, hsvInput, CV_RGB2HSV);
 
 		float amount = strengthGreenSpill*4;
-		float hue = ofMap(bgColor.getHue(), 0, 255, 0, 1);
+		float hue = ofMap(bgColor.get().getHue(), 0, 255, 0, 1);
 		for(int y=0; y < height; y++) {
 			for(int x=0; x < width; x++) {
 				float f =  sin( 2 * PI * ( hue + ( .25 - hsvInput.at<Vec3b>(y, x)[0]/180. )));

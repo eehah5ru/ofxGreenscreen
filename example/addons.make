@@ -1,5 +1,3 @@
-ofxOpenCv
 ofxGreenscreen
-ofxSimpleGuiToo
-ofxMSAInteractiveObject
-ofxXmlSettings
+ofxGui
+ofxOpenCv

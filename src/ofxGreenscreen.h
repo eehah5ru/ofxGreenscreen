@@ -11,14 +11,14 @@ class ofxGreenscreen: public ofImage {
 public:
 	ofxGreenscreen();
 	~ofxGreenscreen();
-	void setPixels(ofPixelsRef pixels);
+	void setPixels(ofPixels pixels);
 	void setPixels(unsigned char*, int w, int h);
 	void setBgColor(ofColor col);
 	ofColor getBgColor();
 	void drawBgColor(int x=0, int y=0, int w=10, int h=10);
 	void draw(int x, int y, int w, int h, bool checkers=false);
-	void learnBgColor(ofPixelsRef pixels);
-	void learnBgColor(ofPixelsRef pixels, int x, int y, int w, int h);
+	void learnBgColor(ofPixels pixels);
+	void learnBgColor(ofPixels pixels, int x, int y, int w, int h);
 
 	ofPixels getBaseMask();
 	ofPixels getDetailMask();
@@ -29,15 +29,17 @@ public:
 	ofPixels getBlueSub();
 	ofPixels getGreenSub();
 
+    ofParameterGroup parameters_chroma;
 	//ALL THE FOLLOWING VALUES ARE IN A RANGE 0 - 1
-	float clipBlackBaseMask, clipWhiteBaseMask;
-	float clipBlackDetailMask, clipWhiteDetailMask;
-	float clipBlackEndMask, clipWhiteEndMask;
-	float clipBlackChromaMask, clipWhiteChromaMask;
-	float strengthBaseMask;
-	float strengthChromaMask;
-	float strengthGreenSpill;
-
+	ofParameter<float> clipBlackBaseMask, clipWhiteBaseMask;
+	ofParameter<float> clipBlackDetailMask, clipWhiteDetailMask;
+	ofParameter<float> clipBlackEndMask, clipWhiteEndMask;
+	ofParameter<float> clipBlackChromaMask, clipWhiteChromaMask;
+	ofParameter<float> strengthBaseMask;
+	ofParameter<float> strengthChromaMask;
+	ofParameter<float> strengthGreenSpill;
+ ofParameter<ofColor> bgColor;
+    
 	void setCropLeft(float val);
 	void setCropRight(float val);
 
@@ -48,10 +50,10 @@ public:
 	float cropRight;
 
 	//enable masks and steps
-	bool doBaseMask;
-	bool doDetailMask;
-	bool doChromaMask;
-	bool doGreenSpill;
+	ofParameter<bool> doBaseMask;
+	ofParameter<bool> doDetailMask;
+	ofParameter<bool> doChromaMask;
+	ofParameter<bool> doGreenSpill;
 
 private:
 	void update();
@@ -74,7 +76,7 @@ private:
 	cv::Mat blueSub;
 
 	//greenkey color
-	ofColor bgColor;
+//    ofColor bgColor;
 
 	//raw input data
 	cv::Mat input;
