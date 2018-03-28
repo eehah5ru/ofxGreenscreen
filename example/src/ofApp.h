@@ -2,8 +2,9 @@
 
 #include "ofMain.h"
 #include "ofxGreenscreen.h"
+#include "ofxGui.h"
 
-class testApp : public ofBaseApp {
+class ofApp : public ofBaseApp {
 
 public:
 	void setup();
@@ -34,4 +35,12 @@ public:
 
 	ofPoint dragStart;
 	ofPoint greenPixelPos;
+    
+    ofxPanel gui_main;
+//    float bgColor[4];
+   
+     ofParameter<bool> saveImgs;
+    
+    ofParameter<bool> bShowGui;
+    ofParameter<int> fps;
 };
