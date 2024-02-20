@@ -143,7 +143,7 @@ void ofxGreenscreen::update() {
 	if(doGreenSpill || doChromaMask) {
 		//REMOVE GREEN SPILL with a multiply filter
 		Mat hsvInput;
-		cvtColor(input, hsvInput, CV_RGB2HSV);
+		cvtColor(input, hsvInput, COLOR_RGB2HSV);
 
 		float amount = strengthGreenSpill*4;
 		float hue = ofMap(bgColor.getHue(), 0, 255, 0, 1);
@@ -170,7 +170,7 @@ void ofxGreenscreen::update() {
 		}
 
 		if(doGreenSpill) {
-			cvtColor(hsvInput, input, CV_HSV2RGB);
+			cvtColor(hsvInput, input, COLOR_HSV2RGB);
 			split(input, rgbInput);
 			red = rgbInput[0];
 			green = rgbInput[1];
